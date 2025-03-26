@@ -1,99 +1,97 @@
 package com.fanxan.serviceauth.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fanxan.serviceauth.utils.enumeration.JenisKelaminEnumDTO;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
-@EqualsAndHashCode(callSuper = false)
-@Entity
-@Table(name = "users")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@ToString
+@Entity
+@EntityListeners(AuditingEntityListener.class)
+@Table(name = "user")
+public class User {
 
-public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "kelurahan", length = 150)
+    private String kelurahan;
+
+    @Column(name = "username", length = 50, unique = true)
     private String username;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "nama_lengkap", length = 100)
+    private String namaLengkap;
 
-    @Column(name = "password")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "jenis_kelamin", columnDefinition = "ENUM('L','P')", nullable = false)
+    private JenisKelaminEnumDTO jenisKelamin;
+
+    @Column(name = "tempat_lahir", length = 50)
+    private String tempatLahir;
+
+    @Column(name = "tanggal_lahir")
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @Temporal(TemporalType.DATE)
+    private Date date;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active = true;
+
+    @Column(name = "password", length = 255)
     private String password;
 
-    @Column(name = "avatar")
-    private String avatar;
+    @Column(name = "email", length = 100, unique = true)
+    private String email;
 
-    @Column(name = "register_referer")
-    private String registerReferer;
+    @Column(name = "photo", length = 255)
+    private String photo;
 
-    @Column(name = "register_referer_type")
-    private String registerRefererType;
+    @Column(name = "phone", length = 15, unique = true)
+    private String phone;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Collection<Role> roles = new ArrayList<>();
 
-    @Column(name = "pin")
-    private String pin;
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "validated")
-    private boolean validated;
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-    @Column(name = "user_Id")
-    private Long userId;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
-    @Column(name = "merchant_Id")
-    private Long merchantId;
+    @CreatedBy
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
 
-    @Column(name = "can_access_oauth")
-    private boolean canAccessOauth;
+    @LastModifiedBy
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
 
-    @Column(name = "available_on_all_stores")
-    private boolean availableOnAllStores;
+    @Column(name = "deleted_by", length = 50)
+    private String deletedBy;
 
-    private int status;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles = new ArrayList<>();
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @JsonIgnore
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public User deleted() {
+        deletedAt = LocalDateTime.now();
+        return this;
     }
 }

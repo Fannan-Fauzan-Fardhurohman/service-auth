@@ -1,0 +1,20 @@
+# Default profile
+spring:
+  application:
+    name:be-auth
+  datasource:
+    url: jdbc:mysql://localhost:3306/be_auth?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Jakarta&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: localhost
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    generate-ddl: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        use-new-id-generator-mappings: true
+    open-in-view: false
+server:
+  port: 8777
