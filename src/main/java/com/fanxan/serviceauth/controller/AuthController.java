@@ -1,9 +1,13 @@
 package com.fanxan.serviceauth.controller;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fanxan.serviceauth.exception.TokenRefreshException;
 import com.fanxan.serviceauth.model.dto.request.LoginRequest;
 import com.fanxan.serviceauth.model.dto.response.JwtResponse;
+import com.fanxan.serviceauth.model.dto.response.TokenRefreshResponse;
 import com.fanxan.serviceauth.model.dto.response.UserDetailsImpl;
 import com.fanxan.serviceauth.model.entity.RefreshToken;
+import com.fanxan.serviceauth.model.entity.TokenRefreshRequest;
 import com.fanxan.serviceauth.service.RefreshTokenService;
 import com.fanxan.serviceauth.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,6 +81,22 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new BaseResponse<>("Login failed", "ERROR", 400, null));
         }
+    }
+
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh Token is not in database"));
     }
 
 }

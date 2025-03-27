@@ -1,5 +1,6 @@
 package com.fanxan.serviceauth.service;
 
+import com.fanxan.serviceauth.exception.TokenRefreshException;
 import com.fanxan.serviceauth.model.entity.RefreshToken;
 import com.fanxan.serviceauth.repository.RefreshTokenRepository;
 import com.fanxan.serviceauth.repository.UserRepository;
@@ -33,6 +34,16 @@ public class RefreshTokenService {
         return refreshToken;
     }
 
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepository.delete(token);
+            throw new TokenRefreshException(token.getToken(), """
+                    Refresh token was expired. Please make a new signin \
+                    request\
+                    """);
+        }
+        return token;
+    }
 
 
 }

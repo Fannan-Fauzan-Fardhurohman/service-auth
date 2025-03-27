@@ -61,8 +61,8 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll() // Pastikan endpoint ini bisa diakses
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // Pastikan endpoint ini bisa diakses
+                        .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
