@@ -18,3 +18,9 @@ spring:
     open-in-view: false
 server:
   port: 8777
+app:
+  local: http://localhost:8081
+  jwt:
+    secret: ${JWT_SECRET:fann4n!}
+  jwtExpirationMs: 86400000
+  jwtRefreshExpirationMs: 120000
