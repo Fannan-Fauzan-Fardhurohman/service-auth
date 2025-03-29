@@ -3,10 +3,7 @@ package com.fanxan.serviceauth.utils;
 import com.fanxan.serviceauth.model.dto.response.UserDetailsImpl;
 import com.fanxan.serviceauth.model.entity.User;
 import com.fanxan.serviceauth.repository.UserRepository;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -17,7 +14,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -60,6 +59,7 @@ public class JwtUtils {
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .claim("email", userOptional.get().getEmail())
                 .claim("jk", userOptional.get().getJenisKelamin())
+                .claim("roles", userOptional.get().getRoles())
                 .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
@@ -93,5 +93,15 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public List<String> getRolesFromJwtToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build().parseSignedClaims(token).getPayload();
+
+        log.info("claims", claims.get("roles"));
+
+        return claims.get("roles", List.class);
     }
 }
