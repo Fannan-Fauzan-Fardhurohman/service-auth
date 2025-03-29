@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
-    private JwtUtils jwtUtils;
-    private CustomUserDetailService userService;
+    private final JwtUtils jwtUtils;
+    private final CustomUserDetailService userService;
 
     public AuthTokenFilter(JwtUtils jwtUtils, CustomUserDetailService userService) {
         this.jwtUtils = jwtUtils;
@@ -40,27 +40,31 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
+                List<String> rolesFromJwtToken = jwtUtils.getRolesFromJwtToken(jwt);
+                log.info("Extracted Roles from JWT: {}", rolesFromJwtToken);
+
+
+
                 List<GrantedAuthority> authorities = jwtUtils.getRolesFromJwtToken(jwt)
                         .stream()
                         .map(role -> new SimpleGrantedAuthority(role.startsWith("ROLE_") ? role : "ROLE_" + role))
                         .collect(Collectors.toList());
 
-
-                UserDetails userDetails = userService.loadUserByUsername(username);
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                        username,
+                        "",
+                        authorities
+                );
 
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                log.info("Authenticated user: {} | Roles: {}", username, authorities);
-
+                log.info("Authenticated user: {} | Assigned Authorities: {}", username, authorities);
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            log.error("Cannot set user authentication: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
@@ -68,11 +72,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
-        }
-
-        return null;
+        return (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) ? headerAuth.substring(7) : null;
     }
 }

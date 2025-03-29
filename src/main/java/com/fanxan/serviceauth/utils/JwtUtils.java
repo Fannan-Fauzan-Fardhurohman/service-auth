@@ -14,10 +14,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -99,9 +97,19 @@ public class JwtUtils {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build().parseSignedClaims(token).getPayload();
+        Object rolesObject = claims.get("roles");
+        if (rolesObject instanceof List<?>) {
+            List<Map<String, Object>> rolesList = (List<Map<String, Object>>) rolesObject;
 
-        log.info("claims", claims.get("roles"));
+            return rolesList.stream()
+                    .map(role -> {
+                        Object roleValue = role.getOrDefault("authority", role.get("roleName"));
+                        return roleValue != null ? roleValue.toString() : null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
 
-        return claims.get("roles", List.class);
+        return Collections.emptyList();
     }
 }

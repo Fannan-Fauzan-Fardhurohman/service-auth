@@ -66,9 +66,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyAuthority("ROLE_MODERATOR", "ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(withDefaults());
 
         return http.build();

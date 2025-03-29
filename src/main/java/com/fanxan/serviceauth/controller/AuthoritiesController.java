@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin")
 public class AuthoritiesController {
 
-    @PreAuthorize("hasAuthority('ROLE_MODERATOR') or hasAuthority('[ROLE_ADMIN]') or hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MODERATOR') or hasAuthority('ROLE_ADMIN')")
     @GetMapping("/test")
     public static String admin() {
         return "only for admin";
