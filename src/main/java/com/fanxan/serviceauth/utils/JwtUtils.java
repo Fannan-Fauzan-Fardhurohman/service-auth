@@ -1,48 +1,84 @@
 package com.fanxan.serviceauth.utils;
 
 import com.fanxan.serviceauth.model.dto.response.UserDetailsImpl;
+import com.fanxan.serviceauth.model.entity.User;
+import com.fanxan.serviceauth.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 @Slf4j
 public class JwtUtils {
+
+    private final UserRepository userRepository;
+
     @Value("${app.jwt.secret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
+    public JwtUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
     public String generateJwtToken(UserDetailsImpl userPrincipal) {
         return generateTokenFromUsername(userPrincipal.getUsername());
     }
 
     public String generateTokenFromUsername(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
         return Jwts.builder()
                 .header().add("type", "JWT").and()
-                .subject(username).issuedAt(new Date())
+                .subject(username)
+                .issuedAt(new Date())
                 .issuer("Mimin")
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .encryptWith(Keys.password(jwtSecret.toCharArray()), Jwts.ENC.A128CBC_HS256)
+                .claim("email", userOptional.get().getEmail())
+                .claim("jk", userOptional.get().getJenisKelamin())
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
                 .compact();
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parser().decryptWith(Keys.password(jwtSecret.toCharArray())).build().parseEncryptedClaims(token).getPayload().getSubject();
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
-            Jwts.parser().decryptWith(Keys.password(jwtSecret.toCharArray())).build().parseEncryptedClaims(authToken);
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(authToken);
             return true;
         } catch (SignatureException e) {
             log.error("Invalid JWT signature: {}", e.getMessage());
