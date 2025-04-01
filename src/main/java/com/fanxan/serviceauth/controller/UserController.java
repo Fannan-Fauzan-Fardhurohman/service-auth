@@ -21,19 +21,19 @@ public class UserController {
 
     @PostMapping
     @Operation(
-            summary = "Create an user",
-            description = "Create user",
+            summary = "Register a user",
+            description = "Register user",
             responses = @ApiResponse(
                     description = HttpConstant.OK,
                     responseCode = HttpConstant.CODE_OK,
                     useReturnTypeSchema = true
             )
     )
-    public BaseResponse<GetUserDTO> saveUser(@RequestBody UserDTO user) {
+    public BaseResponse<GetUserDTO> registerUser(@RequestBody UserDTO user) {
         return new BaseResponse<>(
                 HttpConstant.SUCCESS,
                 HttpStatus.OK,
-                userService.save(user)
+                userService.register(user)
         );
     }
 }

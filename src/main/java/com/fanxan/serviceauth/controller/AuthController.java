@@ -9,6 +9,7 @@ import com.fanxan.serviceauth.model.dto.response.UserDetailsImpl;
 import com.fanxan.serviceauth.model.entity.RefreshToken;
 import com.fanxan.serviceauth.model.entity.TokenRefreshRequest;
 import com.fanxan.serviceauth.service.RefreshTokenService;
+import com.fanxan.serviceauth.service.UserService;
 import com.fanxan.serviceauth.utils.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -42,6 +43,8 @@ public class AuthController {
 
     private final RefreshTokenService refreshTokenService;
 
+    private final UserService userService;
+
     @PostMapping("/login")
     @Operation(
             summary = "Login",
@@ -54,24 +57,7 @@ public class AuthController {
     )
     public ResponseEntity<BaseResponse<JwtResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                            loginRequest.getPassword()));
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String jwt = jwtUtils.generateJwtToken(userDetails);
-
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
-
-            RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-
-            JwtResponse jwtResponse = new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-                    userDetails.getUsername(), userDetails.getEmail(), roles);
-            log.info("jwt response :: {}", jwtResponse);
-
+            JwtResponse jwtResponse = userService.authenticateUser(loginRequest);
             return ResponseEntity.ok(new BaseResponse<>("Login successful", "SUCCESS", 200, jwtResponse));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
