@@ -18,6 +18,7 @@ import com.fanxan.serviceauth.utils.enumeration.VerificationEventEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,6 +68,12 @@ public class UserService {
     @Transactional
     public GetUserDTO register(UserDTO userDTO) throws Exception {
         User user = userMapper.toEntity(userDTO);
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exists");
+        }
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
 
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
@@ -127,6 +135,7 @@ public class UserService {
             String typeOTP,
             UserDTO payload
     ) throws Exception {
+        log.info("verification event code {}", verificationEventCode);
         try {
             return customerVerificationService.createOrUpdate(
                     verificationEventCode, deviceId, typeOTP, payload

@@ -3,7 +3,8 @@ spring:
   application:
     name:be-auth
   datasource:
-    url: jdbc:mysql://localhost:3306/be_auth?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Jakarta&useSSL=false&allowPublicKeyRetrieval=true
+#    url: jdbc:mysql://localhost:3306/be_auth?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Jakarta&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/be_auth?useUnicode=yes&characterEncoding=UTF-8
     username: root
     password: localhost
   jpa:
