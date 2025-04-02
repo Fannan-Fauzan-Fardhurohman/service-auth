@@ -1,11 +1,13 @@
 package com.fanxan.serviceauth.service;
 
 import com.fanxan.serviceauth.mapper.UserMapper;
+import com.fanxan.serviceauth.model.dto.request.CustomerLoginRegisterPayload;
 import com.fanxan.serviceauth.model.dto.request.LoginRequest;
 import com.fanxan.serviceauth.model.dto.response.GetUserDTO;
 import com.fanxan.serviceauth.model.dto.response.JwtResponse;
 import com.fanxan.serviceauth.model.dto.response.UserDTO;
 import com.fanxan.serviceauth.model.dto.response.UserDetailsImpl;
+import com.fanxan.serviceauth.model.entity.CustomerVerificationPin;
 import com.fanxan.serviceauth.model.entity.RefreshToken;
 import com.fanxan.serviceauth.model.entity.Role;
 import com.fanxan.serviceauth.model.entity.User;
@@ -13,6 +15,7 @@ import com.fanxan.serviceauth.repository.RoleRepository;
 import com.fanxan.serviceauth.repository.UserRepository;
 import com.fanxan.serviceauth.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +37,8 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final CustomerVerificationService customerVerificationService;
 
     private final UserMapper userMapper;
 
@@ -45,8 +52,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
+    public UserService(UserRepository userRepository, CustomerVerificationService customerVerificationService, UserMapper userMapper, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
+        this.customerVerificationService = customerVerificationService;
         this.userMapper = userMapper;
         this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
@@ -92,4 +100,25 @@ public class UserService {
         log.info("jwt response :: {}", jwtResponse);
         return jwtResponse;
     }
+
+
+    private void ensureDeviceIdExists(CustomerLoginRegisterPayload payload) {
+        if (Objects.isNull(payload.getDeviceId()) || StringUtils.isEmpty(payload.getDeviceId())) {
+            payload.setDeviceId(UUID.randomUUID().toString());
+        }
+    }
+
+    private CustomerVerificationPin createVerificationPin(
+            String verificationEventCode,
+            String deviceId,
+            String typeOTP,
+            CustomerLoginRegisterPayload payload
+    ) {
+        try{
+            return customerVeri
+        }catch (Exception e){
+
+        }
+    }
+
 }
