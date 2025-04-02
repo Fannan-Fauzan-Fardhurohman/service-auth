@@ -3,6 +3,7 @@ package com.fanxan.serviceauth.model.dto.response;
 
 import com.fanxan.serviceauth.model.entity.Role;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,4 +32,7 @@ public class UserDTO {
     private String phone;
     private Collection<Role> roles;
     private String roleNames;
+    @JsonIgnore
+    private String deviceId;
+    private String typeOTP;
 }

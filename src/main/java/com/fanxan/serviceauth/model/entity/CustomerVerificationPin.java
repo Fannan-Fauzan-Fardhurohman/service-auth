@@ -2,7 +2,7 @@ package com.fanxan.serviceauth.model.entity;
 
 
 import com.fanxan.serviceauth.utils.AppConstant;
-import com.fanxan.serviceauth.utils.DataStatus;
+import com.fanxan.serviceauth.utils.enumeration.DataStatus;
 import com.nimbusds.jose.shaded.gson.annotations.Expose;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -39,7 +39,7 @@ public class CustomerVerificationPin  {
     @Column(name = "event")
     private String event;
 
-    @Column(name = "event_data")
+    @Column(name = "event_data", length = 255)
     private String eventData;
 
     @Column(name = "pin")
@@ -55,7 +55,7 @@ public class CustomerVerificationPin  {
     private String lastType;
 
     @Expose
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "INT")
     protected int status = DataStatus.ACTIVE.getValue();
 
     @CreatedBy

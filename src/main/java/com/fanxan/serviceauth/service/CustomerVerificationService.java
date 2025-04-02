@@ -1,20 +1,26 @@
 package com.fanxan.serviceauth.service;
 
+import com.fanxan.serviceauth.config.GsonConfig;
 import com.fanxan.serviceauth.model.dao.CustomerVerificationPinDao;
 import com.fanxan.serviceauth.model.entity.CustomerVerificationPin;
 import com.fanxan.serviceauth.service.impl.ICustomerVerificationService;
-import com.fanxan.serviceauth.utils.DataStatus;
+import com.fanxan.serviceauth.utils.enumeration.DataStatus;
+import com.fanxan.serviceauth.utils.DateUtils;
 import com.fanxan.serviceauth.utils.ExtraUtils;
 import com.fanxan.serviceauth.utils.OTPUtils;
+import com.nimbusds.jose.shaded.gson.Gson;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CustomerVerificationService implements ICustomerVerificationService {
     private final CustomerVerificationPinDao customerVerificationPinDao;
 
@@ -54,7 +60,7 @@ public class CustomerVerificationService implements ICustomerVerificationService
 
         String token = generatedNewToken(deviceId);
         customerVerificationPin.setToken(token);
-        customerVerificationPin.setTokenHash(StringUtils.generateMD5(token));
+        customerVerificationPin.setTokenHash(ExtraUtils.generateMD5(token));
 
 //        String pin = StringUtils.generateValidationPIN();
 
@@ -82,5 +88,9 @@ public class CustomerVerificationService implements ICustomerVerificationService
     @Override
     public CustomerVerificationPin findAVerification2(String event, String token, String pin) throws Exception {
         return null;
+    }
+
+    private String generatedNewToken(String deviceId) throws Exception {
+        return UUID.randomUUID() + "-" + deviceId;
     }
 }

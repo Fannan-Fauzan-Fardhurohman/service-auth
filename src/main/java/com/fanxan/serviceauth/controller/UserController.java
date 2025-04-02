@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     @Operation(
             summary = "Register a user",
             description = "Register user",
@@ -29,7 +29,7 @@ public class UserController {
                     useReturnTypeSchema = true
             )
     )
-    public BaseResponse<GetUserDTO> registerUser(@RequestBody UserDTO user) {
+    public BaseResponse<GetUserDTO> registerUser(@RequestBody UserDTO user) throws Exception {
         return new BaseResponse<>(
                 HttpConstant.SUCCESS,
                 HttpStatus.OK,

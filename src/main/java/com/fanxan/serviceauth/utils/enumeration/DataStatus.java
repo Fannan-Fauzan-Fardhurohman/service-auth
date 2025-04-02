@@ -1,4 +1,4 @@
-package com.fanxan.serviceauth.utils;
+package com.fanxan.serviceauth.utils.enumeration;
 
 import lombok.AccessLevel;
 import lombok.Getter;

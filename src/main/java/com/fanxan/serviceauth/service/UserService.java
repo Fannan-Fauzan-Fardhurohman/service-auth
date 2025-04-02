@@ -14,6 +14,7 @@ import com.fanxan.serviceauth.model.entity.User;
 import com.fanxan.serviceauth.repository.RoleRepository;
 import com.fanxan.serviceauth.repository.UserRepository;
 import com.fanxan.serviceauth.utils.JwtUtils;
+import com.fanxan.serviceauth.utils.enumeration.VerificationEventEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class UserService {
     }
 
     @Transactional
-    public GetUserDTO register(UserDTO userDTO) {
+    public GetUserDTO register(UserDTO userDTO) throws Exception {
         User user = userMapper.toEntity(userDTO);
 
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
@@ -72,11 +73,23 @@ public class UserService {
             user.setDate(userDTO.getTanggalLahir());
         }
 
+        user.setActive(false);
+
         List<Role> roles = roleRepository.findByRoleNameIn(Collections.singleton(userDTO.getRoleNames()));
         user.setRoles(roles);
 
-        User savedUser = userRepository.save(user);
+        ensureDeviceIdExists(userDTO);
 
+        CustomerVerificationPin verificationPin = createVerificationPin(
+                "REGISTER",
+                userDTO.getDeviceId(),
+                userDTO.getTypeOTP(),
+                userDTO
+        );
+
+
+        User savedUser = userRepository.save(user);
+        log.info("Saved user: {}", savedUser);
         return userMapper.toDto(savedUser);
     }
 
@@ -102,7 +115,7 @@ public class UserService {
     }
 
 
-    private void ensureDeviceIdExists(CustomerLoginRegisterPayload payload) {
+    private void ensureDeviceIdExists(UserDTO payload) {
         if (Objects.isNull(payload.getDeviceId()) || StringUtils.isEmpty(payload.getDeviceId())) {
             payload.setDeviceId(UUID.randomUUID().toString());
         }
@@ -112,12 +125,15 @@ public class UserService {
             String verificationEventCode,
             String deviceId,
             String typeOTP,
-            CustomerLoginRegisterPayload payload
-    ) {
-        try{
-            return customerVeri
-        }catch (Exception e){
-
+            UserDTO payload
+    ) throws Exception {
+        try {
+            return customerVerificationService.createOrUpdate(
+                    verificationEventCode, deviceId, typeOTP, payload
+            );
+        } catch (Exception e) {
+            log.error("Failed to create verification pin");
+            throw e;
         }
     }
 

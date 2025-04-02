@@ -1,0 +1,211 @@
+[
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Indonesia",
+      "code2": "ID",
+      "code3": "IDN"
+    },
+    "timezone": "Asia/Jakarta",
+    "currencies": {
+      "code": "IDR",
+      "name": "Indonesian rupiah",
+      "symbol": "Rp"
+    },
+    "language": "Indonesian",
+    "flagUrl": "https://flagcdn.com/w20/id.png",
+    "callingCode": "+62",
+    "capitalCity": "Jakarta",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Malaysia",
+      "code2": "MY",
+      "code3": "MYS"
+    },
+    "timezone": "Asia/Kuala_Lumpur",
+    "currencies": {
+      "code": "MYR",
+      "name": "Malaysian ringgit",
+      "symbol": "RM"
+    },
+    "language": "Malay",
+    "flagUrl": "https://flagcdn.com/w20/my.png",
+    "callingCode": "+60",
+    "capitalCity": "Kuala Lumpur",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Singapore",
+      "code2": "SG",
+      "code3": "SGP"
+    },
+    "timezone": "Asia/Singapore",
+    "currencies": {
+      "code": "SGD",
+      "name": "Singapore dollar",
+      "symbol": "$"
+    },
+    "language": "English",
+    "flagUrl": "https://flagcdn.com/w20/sg.png",
+    "callingCode": "+65",
+    "capitalCity": "Singapore",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Thailand",
+      "code2": "TH",
+      "code3": "THA"
+    },
+    "timezone": "Asia/Bangkok",
+    "currencies": {
+      "code": "THB",
+      "name": "Thai baht",
+      "symbol": "฿"
+    },
+    "language": "Thai",
+    "flagUrl": "https://flagcdn.com/w20/th.png",
+    "callingCode": "+66",
+    "capitalCity": "Bangkok",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Philippines",
+      "code2": "PH",
+      "code3": "PHL"
+    },
+    "timezone": "Asia/Manila",
+    "currencies": {
+      "code": "PHP",
+      "name": "Philippine peso",
+      "symbol": "₱"
+    },
+    "language": "Filipino",
+    "flagUrl": "https://flagcdn.com/w20/ph.png",
+    "callingCode": "+63",
+    "capitalCity": "Manila",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Vietnam",
+      "code2": "VN",
+      "code3": "VNM"
+    },
+    "timezone": "Asia/Ho_Chi_Minh",
+    "currencies": {
+      "code": "VND",
+      "name": "Vietnamese đồng",
+      "symbol": "₫"
+    },
+    "language": "Vietnamese",
+    "flagUrl": "https://flagcdn.com/w20/vn.png",
+    "callingCode": "+84",
+    "capitalCity": "Hanoi",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Cambodia",
+      "code2": "KH",
+      "code3": "KHM"
+    },
+    "timezone": "Asia/Phnom_Penh",
+    "currencies": {
+      "code": "KHR",
+      "name": "Cambodian riel",
+      "symbol": "៛"
+    },
+    "language": "Khmer",
+    "flagUrl": "https://flagcdn.com/w20/kh.png",
+    "callingCode": "+855",
+    "capitalCity": "Phnom Penh",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Laos",
+      "code2": "LA",
+      "code3": "LAO"
+    },
+    "timezone": "Asia/Vientiane",
+    "currencies": {
+      "code": "LAK",
+      "name": "Lao kip",
+      "symbol": "₭"
+    },
+    "language": "Lao",
+    "flagUrl": "https://flagcdn.com/w20/la.png",
+    "callingCode": "+856",
+    "capitalCity": "Vientiane",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Myanmar",
+      "code2": "MM",
+      "code3": "MMR"
+    },
+    "timezone": "Asia/Yangon",
+    "currencies": {
+      "code": "MMK",
+      "name": "Burmese kyat",
+      "symbol": "Ks"
+    },
+    "language": "Burmese",
+    "flagUrl": "https://flagcdn.com/w20/mm.png",
+    "callingCode": "+95",
+    "capitalCity": "Naypyidaw",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Brunei",
+      "code2": "BN",
+      "code3": "BRN"
+    },
+    "timezone": "Asia/Brunei",
+    "currencies": {
+      "code": "BND",
+      "name": "Brunei dollar",
+      "symbol": "$"
+    },
+    "language": "Malay",
+    "flagUrl": "https://flagcdn.com/w20/bn.png",
+    "callingCode": "+673",
+    "capitalCity": "Bandar Seri Begawan",
+    "subregion": "South-Eastern Asia"
+  },
+  {
+    "region": "Asia",
+    "countries": {
+      "name": "Taiwan",
+      "code2": "TW",
+      "code3": "TWN"
+    },
+    "timezone": "Asia/Taipei",
+    "currencies": {
+      "code": "TWD",
+      "name": "New Taiwan dollar",
+      "symbol": "$"
+    },
+    "language": "Chinese",
+    "flagUrl": "https://flagcdn.com/w20/tw.png",
+    "callingCode": "+886",
+    "capitalCity": "Taipei",
+    "subregion": "Eastern Asia"
+  }
+]
