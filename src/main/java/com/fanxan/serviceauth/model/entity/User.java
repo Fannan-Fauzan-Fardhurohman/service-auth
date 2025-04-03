@@ -65,6 +65,9 @@ public class User {
     @Column(name = "phone", length = 15, unique = true)
     private String phone;
 
+    @Version
+    private Long version;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Collection<Role> roles = new ArrayList<>();
 

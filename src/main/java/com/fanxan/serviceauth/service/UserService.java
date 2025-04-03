@@ -88,12 +88,17 @@ public class UserService {
 
         ensureDeviceIdExists(userDTO);
 
-        CustomerVerificationPin verificationPin = createVerificationPin(
-                "REGISTER",
-                userDTO.getDeviceId(),
-                userDTO.getTypeOTP(),
-                userDTO
-        );
+        CustomerVerificationPin verificationPin = null;
+        try{
+            verificationPin = createVerificationPin(
+                    "REGISTER",
+                    userDTO.getDeviceId(),
+                    userDTO.getTypeOTP(),
+                    userDTO
+            );
+        }catch (Exception e){
+            log.info(e.getMessage());
+        }
 
 
         User savedUser = userRepository.save(user);
