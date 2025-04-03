@@ -39,7 +39,7 @@ public class CustomerVerificationPin  {
     @Column(name = "event")
     private String event;
 
-    @Column(name = "event_data", length = 255)
+    @Column(name = "event_data", columnDefinition = "TEXT")
     private String eventData;
 
     @Column(name = "pin")

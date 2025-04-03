@@ -17,6 +17,7 @@ import com.fanxan.serviceauth.utils.JwtUtils;
 import com.fanxan.serviceauth.utils.enumeration.VerificationEventEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,11 +52,13 @@ public class UserService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
 
+    private final RabbitTemplate rabbitTemplate;
+
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, CustomerVerificationService customerVerificationService, UserMapper userMapper, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
+    public UserService(UserRepository userRepository, CustomerVerificationService customerVerificationService, UserMapper userMapper, RoleRepository roleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService, RabbitTemplate rabbitTemplate) {
         this.userRepository = userRepository;
         this.customerVerificationService = customerVerificationService;
         this.userMapper = userMapper;
@@ -63,6 +66,7 @@ public class UserService {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.refreshTokenService = refreshTokenService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     @Transactional
@@ -89,20 +93,21 @@ public class UserService {
         ensureDeviceIdExists(userDTO);
 
         CustomerVerificationPin verificationPin = null;
-        try{
+        try {
             verificationPin = createVerificationPin(
                     "REGISTER",
                     userDTO.getDeviceId(),
                     userDTO.getTypeOTP(),
                     userDTO
             );
-        }catch (Exception e){
+        } catch (Exception e) {
             log.info(e.getMessage());
         }
 
 
         User savedUser = userRepository.save(user);
         log.info("Saved user: {}", savedUser);
+        rabbitTemplate.convertAndSend("auth","AUTH", savedUser);
         return userMapper.toDto(savedUser);
     }
 
