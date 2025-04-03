@@ -107,6 +107,7 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         log.info("Saved user: {}", savedUser);
+        log.info("Saved user: {} , name : {}", savedUser, savedUser.getNamaLengkap());
         rabbitTemplate.convertAndSend("auth","AUTH", savedUser);
         return userMapper.toDto(savedUser);
     }
