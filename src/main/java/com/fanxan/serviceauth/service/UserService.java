@@ -111,25 +111,36 @@ public class UserService {
         rabbitTemplate.convertAndSend("auth","AUTH", savedUser);
         return userMapper.toDto(savedUser);
     }
-
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-                        loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
+                )
+        );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Long userId = userDetails.getId();
+
         String jwt = jwtUtils.generateJwtToken(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userId);
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                .toList();
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        JwtResponse jwtResponse = new JwtResponse(
+                jwt,
+                refreshToken.getToken(),
+                userId,
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles
+        );
 
-        JwtResponse jwtResponse = new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-                userDetails.getUsername(), userDetails.getEmail(), roles);
-        log.info("jwt response :: {}", jwtResponse);
+        log.info("JWT Response: {}", jwtResponse);
         return jwtResponse;
     }
 
